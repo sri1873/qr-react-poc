@@ -1,0 +1,70 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(45deg, #f1f1f1, #ffffff);
+}
+
+.container {
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 4px;
+}
+.btn-container,
+.inp-container {
+  padding: 10px;
+}
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 90%;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button#generate-pdf {
+  background-color: #4caf50;
+}
+
+button#download-pdf {
+  background-color: #2196f3;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+html {
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.k-qrcode {
+  margin: 20px auto;
+  display: block;
+}
+
+#qrValue {
+  width: 190px;
+  max-width: 190px;
+  height: 100px;
+}
+
+.options label {
+  display: inline-block;
+  width: 120px;
+}
+
+.options .k-dropdownlist,
+.options .k-numerictextbox {
+  width: 100px;
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>QR Code Generator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+
+  <body>
+    <div class="container">
+      <div class="inp-container">
+        <input
+          type="text"
+          name="dispatchId"
+          id="dispatchId"
+          placeholder="Enter Dispatch Notification Id"
+        />
+      </div>
+      <div class="btn-container">
+        <button id="generate-pdf">Generate PDF</button>
+        <button id="download-pdf">Download</button>
+      </div>
+    </div>
+    <div id="qrcode" hidden></div>
+
+    <script type="text/javascript">
+      // Create a new jsPDF instance
+      const doc = new jspdf.jsPDF();
+      async function generate(type) {
+        // FETCH API
+        var data;
+        var dispatchId = document.getElementById("dispatchId").value;
+        var settings = {
+          url: `http://localhost:9006/effigo/api/external/asn/v1/varroc/getShortUrl/${dispatchId}`,
+          method: "GET",
+          timeout: 0,
+        };
+
+        await $.ajax(settings).done((response) => {
+          console.log(response);
+          data = response?.shorturl;
+          if (response.err) {
+            alert(response.err)
+          }
+
+          //--------QRCode Generation
+          $("#qrcode").empty();
+
+          var qrcode = new QRCode("qrcode", {
+            text: data, // you can set your QR code text
+            width: 100,
+            height: 100,
+            correctLevel: QRCode.CorrectLevel.M,
+          });
+
+          $("#qrcode img").on("load", () => {
+            // Get the base64 encoded QR code image
+            var qrCodeImageURI = $("#qrcode img").attr("src");
+            console.log($("#qrcode img"));
+            console.log(qrCodeImageURI);
+
+            // Add the QR code image to the PDF document
+            doc.addImage(qrCodeImageURI, "PNG", 50, 10, 100, 100);
+            // doc.output("dataurlnewwindow");
+            type == "download"
+              ? doc.save("qr_code.pdf")
+              : doc.output("dataurlnewwindow");
+          });
+        });
+      }
+
+      $("#download-pdf").click(() => {
+        generate("download");
+      });
+      $("#generate-pdf").click(() => {
+        generate("generate");
+      });
+    </script>
+  </body>
+</html>

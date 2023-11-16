@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="https://demos.telerik.com/kendo-ui/qrcode/api" />
+    <link rel="stylesheet" href="./style.css">
+    <title></title>
+    <link
+      href="https://kendo.cdn.telerik.com/themes/6.4.0/default/default-main.css"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2023.2.606/js/kendo.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="configurator" id="qrConfig">
+      <div class="demo-section">
+        <div id="qrCode"></div>
+      </div>
+      <div class="box-col">
+        <h4>Options</h4>
+        <ul class="options">
+          <li>
+            <label for="errorCorrection">Error correction level:</label>
+            <select
+              id="errorCorrection"
+              data-role="dropdownlist"
+              data-bind="value: qrOptions.errorCorrection"
+            >
+              <option value="L">L</option>
+              <option value="M">M</option>
+              <option value="Q">Q</option>
+              <option value="H">H</option>
+            </select>
+          </li>
+          <li>
+            <label for="size">Size:</label>
+            <input
+              id="size"
+              data-bind="value: qrOptions.size"
+              data-role="numerictextbox"
+              data-format="n0"
+              data-decimals="0"
+            />
+          </li>
+        </ul>
+      </div>
+      <div class="box-col">
+        <h4>Colors</h4>
+        <ul class="options">
+          <li>
+            <label for="backgroundColor">Background color:</label>
+            <input
+              id="backgroundColor"
+              data-role="colorpicker"
+              data-bind="value: qrOptions.background"
+            />
+          </li>
+          <li>
+            <label for="moduleColor">Module color:</label>
+            <input
+              id="moduleColor"
+              data-role="colorpicker"
+              data-bind="value: qrOptions.color"
+            />
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script type="text/javascript">
+      const doc = new jspdf.jsPDF();
+        $(document).ready(function () {
+          var qrCode = $("#qrCode")
+            .kendoQRCode({
+              value: "https://nccltddev1.effigo.in/admin/images/bobLogo.png",
+              size: 200,
+              overlay: {
+                imageUrl:
+                  "https://nccltddev1.effigo.in/admin/images/bobLogo.png",
+                width: 50,
+                height: 25,
+              },
+            })
+            .data("kendoQRCode");
+
+          var viewModel = kendo.observable({
+            qrValue: "https://nccltddev1.effigo.in/admin/images/bobLogo.png",
+            qrOptions: {
+              errorCorrection: "L",
+              encoding: "",
+              background: "#FFFFFF",
+              color: "#000000",
+              size: 200,
+            },
+            setValue: function () {
+              qrCode.value(this.qrValue);
+            },
+            setElementWidth: function () {
+              qrCode.element.width(this.qrOptions.size);
+            },
+          });
+          console.log(qrCode)
+          viewModel.bind("change", function (e) {
+            if (e.field == "qrValue") {
+              this.setValue();
+            } else {
+              this.setElementWidth();
+              qrCode.setOptions(this.qrOptions.toJSON());
+            }
+          });
+
+          kendo.bind($("#qrConfig"), viewModel);
+          viewModel.setElementWidth();
+          viewModel.setValue();
+        });
+        console.log($('#qrCode')[0])
+        html2canvas(qrCode.data).then(function(canvas) {
+          var imgData = canvas.toDataURL();
+          console.log(imgData)
+          doc.addImage(imgData, "PNG", 50, 10, 100, 100);
+          doc.save("qr_code.pdf")
+        });
+      </script>
+  </body>
+</html>
